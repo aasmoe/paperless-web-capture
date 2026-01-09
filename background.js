@@ -1,4 +1,4 @@
-// Service worker for Paperless Capture extension
+// Service worker for Paperless Web Capture extension
 
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

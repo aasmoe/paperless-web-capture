@@ -1,4 +1,4 @@
-// Popup script for Paperless Capture extension
+// Popup script for Paperless Web Capture extension
 
 let statusTimeout;
 
