@@ -1,4 +1,3 @@
-// Popup script for Paperless Web Capture extension
 
 let statusTimeout;
 
@@ -57,7 +56,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   updateUI();
 
-  // Handle capture button click
   captureBtn.addEventListener('click', async () => {
     captureBtn.disabled = true;
     showStatus('Generating PDF...', 'info');
@@ -82,7 +80,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Toggle settings panel
   toggleSettingsLink.addEventListener('click', (e) => {
     e.preventDefault();
     if (settingsPanel.classList.contains('hidden')) {
@@ -92,7 +89,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Cancel settings edits
   cancelSettingsBtn.addEventListener('click', (e) => {
     e.preventDefault();
     if (hasSettings()) {
@@ -103,7 +99,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Save settings
   saveSettingsBtn.addEventListener('click', async (e) => {
     e.preventDefault();
     const serverUrl = serverUrlInput.value.trim();
@@ -121,12 +116,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    // Test connection first
     saveSettingsBtn.disabled = true;
     cancelSettingsBtn.disabled = true;
     showStatus('Testing connection...', 'info');
 
-    // Test connection via background with new credentials
     chrome.runtime.sendMessage({ action: 'testConnection', serverUrl, apiToken }, (response) => {
       saveSettingsBtn.disabled = false;
       cancelSettingsBtn.disabled = false;
@@ -137,7 +130,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       if (response && response.success) {
-        // Only save if connection succeeds
         chrome.storage.sync.set({ serverUrl, apiToken });
         currentSettings = { serverUrl, apiToken };
         setMode('capture');

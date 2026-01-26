@@ -1,12 +1,10 @@
-// Service worker for Paperless Web Capture extension
 
-// Listen for messages from popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'capturePage') {
     capturePage(request.tabId)
       .then(result => sendResponse({ success: true, message: result }))
       .catch(error => sendResponse({ success: false, message: error.message }));
-    return true; // Will respond asynchronously
+    return true;
   }
   
   if (request.action === 'testConnection') {
@@ -20,23 +18,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-// Capture current page as PDF and upload to Paperless
 async function capturePage(tabId) {
-  // Get settings
   const settings = await chrome.storage.sync.get(['serverUrl', 'apiToken']);
   
   if (!settings.serverUrl || !settings.apiToken) {
     throw new Error('Please configure Paperless server settings first');
   }
   
-  // Get tab info for title
   const tab = await chrome.tabs.get(tabId);
   const pageTitle = tab.title || 'Untitled';
   
-  // Check if this tab is displaying a PDF
   const isPdf = await checkIfPdf(tabId);
   
-  // Get PDF bytes from either existing PDF or HTML page
   const pdfBytes = isPdf 
     ? await fetchPdfBytesFromTab(tabId, tab.url)
     : await printHtmlToPdf(tabId);
@@ -45,7 +38,6 @@ async function capturePage(tabId) {
   return `Successfully sent "${pageTitle}" to Paperless`;
 }
 
-// Check if tab is displaying a PDF using document.contentType
 async function checkIfPdf(tabId) {
   try {
     const [result] = await chrome.scripting.executeScript({
@@ -58,7 +50,6 @@ async function checkIfPdf(tabId) {
   }
 }
 
-// Convert HTML page to PDF using DevTools Protocol
 async function printHtmlToPdf(tabId) {
   let attached = false;
   try {
@@ -70,8 +61,8 @@ async function printHtmlToPdf(tabId) {
       displayHeaderFooter: false,
       printBackground: true,
       preferCSSPageSize: true,
-      paperWidth: 8.27, // A4 width in inches
-      paperHeight: 11.69, // A4 height in inches
+      paperWidth: 8.27,
+      paperHeight: 11.69,
       marginTop: 0.4,
       marginBottom: 0.4,
       marginLeft: 0.4,
@@ -81,7 +72,6 @@ async function printHtmlToPdf(tabId) {
     await chrome.debugger.detach({ tabId });
     attached = false;
     
-    // Convert base64 PDF data to Uint8Array
     return Uint8Array.from(atob(result.data), c => c.charCodeAt(0));
     
   } catch (error) {
@@ -94,10 +84,8 @@ async function printHtmlToPdf(tabId) {
   }
 }
 
-// Fetch PDF bytes directly from the page
 async function fetchPdfBytesFromTab(tabId, tabUrl) {
   try {
-    // Fetch directly from background worker - works for file:// URLs
     const resp = await fetch(tabUrl);
     if (!resp.ok) {
       throw new Error(`Failed to fetch PDF: ${resp.status}`);
@@ -109,22 +97,18 @@ async function fetchPdfBytesFromTab(tabId, tabUrl) {
   }
 }
 
-// Upload PDF to Paperless server
 async function uploadToPaperless(pdfData, title, sourceUrl, settings) {
   const formData = new FormData();
   
-  // Create blob from PDF data
   const blob = new Blob([pdfData], { type: 'application/pdf' });
   const filename = sanitizeFilename(title) + '.pdf';
   formData.append('document', blob, filename);
   formData.append('title', title);
   
-  // Add source URL as custom field if available
   if (sourceUrl) {
     formData.append('custom_field_source_url', sourceUrl);
   }
   
-  // Ensure serverUrl doesn't have trailing slash
   const serverUrl = settings.serverUrl.replace(/\/$/, '');
   const uploadUrl = `${serverUrl}/api/documents/post_document/`;
   
@@ -144,7 +128,6 @@ async function uploadToPaperless(pdfData, title, sourceUrl, settings) {
   return await response.json();
 }
 
-// Test connection to Paperless server
 async function testPaperlessConnection(overrideSettings) {
   let settings = overrideSettings;
   if (!settings) {
@@ -172,7 +155,6 @@ async function testPaperlessConnection(overrideSettings) {
   return 'Connection successful!';
 }
 
-// Sanitize filename for safe usage
 function sanitizeFilename(filename) {
   return filename
     .replace(/[^a-z0-9]/gi, '_')
