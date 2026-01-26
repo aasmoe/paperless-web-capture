@@ -36,13 +36,30 @@ async function capturePage(tabId) {
   // Check if this tab is displaying a PDF
   const isPdf = await checkIfPdf(tabId);
   
-  if (isPdf) {
-    const pdfBytes = await fetchPdfBytesFromTab(tabId, tab.url);
-    await uploadToPaperless(pdfBytes, pageTitle, tab.url, settings);
-    return `Successfully sent "${pageTitle}" to Paperless`;
-  }
+  // Get PDF bytes from either existing PDF or HTML page
+  const pdfBytes = isPdf 
+    ? await fetchPdfBytesFromTab(tabId, tab.url)
+    : await printHtmlToPdf(tabId);
   
-  // HTML page -> use DevTools printToPDF
+  await uploadToPaperless(pdfBytes, pageTitle, tab.url, settings);
+  return `Successfully sent "${pageTitle}" to Paperless`;
+}
+
+// Check if tab is displaying a PDF using document.contentType
+async function checkIfPdf(tabId) {
+  try {
+    const [result] = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => document.contentType === 'application/pdf'
+    });
+    return result?.result === true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// Convert HTML page to PDF using DevTools Protocol
+async function printHtmlToPdf(tabId) {
   let attached = false;
   try {
     await chrome.debugger.attach({ tabId }, '1.3');
@@ -64,11 +81,8 @@ async function capturePage(tabId) {
     await chrome.debugger.detach({ tabId });
     attached = false;
     
-    const pdfBytes = Uint8Array.from(atob(result.data), c => c.charCodeAt(0));
-    
-    await uploadToPaperless(pdfBytes, pageTitle, tab.url, settings);
-    
-    return `Successfully sent "${pageTitle}" to Paperless`;
+    // Convert base64 PDF data to Uint8Array
+    return Uint8Array.from(atob(result.data), c => c.charCodeAt(0));
     
   } catch (error) {
     if (attached) {
@@ -80,39 +94,16 @@ async function capturePage(tabId) {
   }
 }
 
-// Check if tab is displaying a PDF using document.contentType
-async function checkIfPdf(tabId) {
-  try {
-    const [result] = await chrome.scripting.executeScript({
-      target: { tabId },
-      func: () => document.contentType === 'application/pdf'
-    });
-    return result?.result === true;
-  } catch (e) {
-    return false;
-  }
-}
-
 // Fetch PDF bytes directly from the page
 async function fetchPdfBytesFromTab(tabId, tabUrl) {
   try {
-    const [result] = await chrome.scripting.executeScript({
-      target: { tabId },
-      func: async (url) => {
-        const resp = await fetch(url, { credentials: 'include' });
-        if (!resp.ok) {
-          throw new Error(`Failed to fetch PDF: ${resp.status}`);
-        }
-        const buf = await resp.arrayBuffer();
-        return Array.from(new Uint8Array(buf)); // serializable
-      },
-      args: [tabUrl]
-    });
-
-    if (!result?.result) {
-      throw new Error('Failed to fetch PDF from page');
+    // Fetch directly from background worker - works for file:// URLs
+    const resp = await fetch(tabUrl);
+    if (!resp.ok) {
+      throw new Error(`Failed to fetch PDF: ${resp.status}`);
     }
-    return new Uint8Array(result.result);
+    const buf = await resp.arrayBuffer();
+    return new Uint8Array(buf);
   } catch (e) {
     throw new Error(`Could not fetch PDF: ${e.message}`);
   }
