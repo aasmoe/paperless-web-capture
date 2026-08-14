@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const saveSettingsBtn = document.getElementById('saveSettingsBtn');
   const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
   const toggleSettingsLink = document.getElementById('toggleSettingsLink');
+  const gearIcon = document.getElementById('gearIcon');
+  const backIcon = document.getElementById('backIcon');
+  const serverUrlDisplay = document.getElementById('serverUrlDisplay');
 
   const handleEnterToSave = (event) => {
     if (event.key === 'Enter') {
@@ -29,7 +32,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (mode === 'settings') {
       settingsPanel.classList.remove('hidden');
       captureSection.classList.add('hidden');
-      toggleSettingsLink.textContent = '< Back';
+      gearIcon.classList.add('hidden');
+      backIcon.classList.remove('hidden');
       serverUrlInput.value = currentSettings.serverUrl || '';
       apiTokenInput.value = currentSettings.apiToken || '';
       captureBtn.disabled = true;
@@ -38,11 +42,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (hasSettings()) {
         captureSection.classList.remove('hidden');
         captureBtn.disabled = false;
+        serverUrlDisplay.textContent = currentSettings.serverUrl;
       } else {
         captureSection.classList.add('hidden');
         captureBtn.disabled = true;
       }
-      toggleSettingsLink.textContent = '⚙️ Edit settings';
+      gearIcon.classList.remove('hidden');
+      backIcon.classList.add('hidden');
     }
   };
 

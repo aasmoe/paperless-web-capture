@@ -89,10 +89,9 @@ body {
   background: var(--pngx-bg-alt);
 }
 
-h1 {
-  font-size: 20px;
-  margin-bottom: 20px;
-  color: var(--pngx-text);
+.icon {
+  flex-shrink: 0;
+  vertical-align: -2px;
 }
 
 h3 {
@@ -139,6 +138,10 @@ small {
 
 /* Buttons */
 .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   padding: 10px 20px;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -244,20 +247,36 @@ small {
   color: var(--pngx-text);
 }
 
+.server-url {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--pngx-text-muted);
+  overflow-wrap: anywhere;
+}
+
 /* Footer */
 .footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-top: 20px;
   padding-top: 15px;
   border-top: 1px solid var(--pngx-border);
-  text-align: center;
 }
 
-.footer a {
-  color: var(--pngx-primary);
-  text-decoration: none;
+.app-title {
   font-size: 13px;
+  font-weight: 600;
+  color: var(--pngx-text);
 }
 
-.footer a:hover {
-  text-decoration: underline;
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  color: var(--pngx-text-muted);
+}
+
+.settings-toggle:hover {
+  color: var(--pngx-primary);
 }
