@@ -11,3 +11,6 @@ Thumbs.db
 # Ignore temporary files
 *.log
 *.tmp
+
+# ignore .zip files
+*.zip
