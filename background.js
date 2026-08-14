@@ -34,7 +34,7 @@ async function capturePage(tabId) {
     ? await fetchPdfBytesFromTab(tabId, tab.url)
     : await printHtmlToPdf(tabId);
   
-  await uploadToPaperless(pdfBytes, pageTitle, tab.url, settings);
+  await uploadToPaperless(pdfBytes, pageTitle, settings);
   return `Successfully sent "${pageTitle}" to Paperless`;
 }
 
@@ -97,18 +97,14 @@ async function fetchPdfBytesFromTab(tabId, tabUrl) {
   }
 }
 
-async function uploadToPaperless(pdfData, title, sourceUrl, settings) {
+async function uploadToPaperless(pdfData, title, settings) {
   const formData = new FormData();
-  
+
   const blob = new Blob([pdfData], { type: 'application/pdf' });
   const filename = sanitizeFilename(title) + '.pdf';
   formData.append('document', blob, filename);
   formData.append('title', title);
-  
-  if (sourceUrl) {
-    formData.append('custom_field_source_url', sourceUrl);
-  }
-  
+
   const serverUrl = settings.serverUrl.replace(/\/$/, '');
   const uploadUrl = `${serverUrl}/api/documents/post_document/`;
   
@@ -157,7 +153,8 @@ async function testPaperlessConnection(overrideSettings) {
 
 function sanitizeFilename(filename) {
   return filename
-    .replace(/[^a-z0-9]/gi, '_')
+    .replace(/[\\/:*?"<>|\x00-\x1f]/g, '_')
+    .replace(/\s+/g, '_')
     .replace(/_+/g, '_')
     .substring(0, 100);
 }

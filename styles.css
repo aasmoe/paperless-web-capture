@@ -25,10 +25,6 @@
   --pngx-danger-text: #721c24;
   --pngx-danger-border: #f5c6cb;
 
-  --pngx-warning-bg: #fff3cd;
-  --pngx-warning-text: #856404;
-  --pngx-warning-border: #ffeaa7;
-
   --pngx-info-bg: #d1ecf1;
   --pngx-info-text: #0c5460;
   --pngx-info-border: #bee5eb;
@@ -59,10 +55,6 @@
     --pngx-danger-bg: #3a1219;
     --pngx-danger-text: #f5a3b0;
     --pngx-danger-border: #b71631;
-
-    --pngx-warning-bg: #3a2f12;
-    --pngx-warning-text: #e8c468;
-    --pngx-warning-border: #5c4a1a;
 
     --pngx-info-bg: #12303a;
     --pngx-info-text: #7fd0e8;
@@ -214,12 +206,6 @@ small {
   background-color: var(--pngx-danger-bg);
   color: var(--pngx-danger-text);
   border: 1px solid var(--pngx-danger-border);
-}
-
-.status.warning {
-  background-color: var(--pngx-warning-bg);
-  color: var(--pngx-warning-text);
-  border: 1px solid var(--pngx-warning-border);
 }
 
 .status.info {
