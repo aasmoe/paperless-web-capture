@@ -13,10 +13,6 @@
 
   --pngx-focus-shadow: rgba(23, 84, 31, 0.3);
 
-  --pngx-secondary-text: #495057;
-  --pngx-secondary-border: #ced4da;
-  --pngx-secondary-hover-bg: #f1f3f5;
-
   --pngx-success-bg: var(--pngx-primary-faded);
   --pngx-success-text: #124018;
   --pngx-success-border: #bfe3c2;
@@ -43,10 +39,6 @@
     --pngx-text-muted: #8a919e;
 
     --pngx-focus-shadow: rgba(34, 124, 46, 0.35);
-
-    --pngx-secondary-text: #ced4da;
-    --pngx-secondary-border: #565a63;
-    --pngx-secondary-hover-bg: #33353a;
 
     --pngx-success-bg: var(--pngx-primary-faded);
     --pngx-success-text: #7fdb8f;
@@ -128,6 +120,21 @@ small {
   font-size: 12px;
 }
 
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--pngx-primary);
+  cursor: pointer;
+}
+
 /* Buttons */
 .btn {
   display: flex;
@@ -156,26 +163,6 @@ small {
 
 .btn-primary:hover:not(:disabled) {
   background-color: var(--pngx-primary-hover);
-}
-
-.btn-secondary {
-  background-color: transparent;
-  border-color: var(--pngx-secondary-border);
-  color: var(--pngx-secondary-text);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background-color: var(--pngx-secondary-hover-bg);
-}
-
-.button-group {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.button-group .btn {
-  flex: 1;
 }
 
 /* Status messages */
